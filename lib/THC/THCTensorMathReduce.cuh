@@ -11,6 +11,7 @@
 #include <thrust/device_ptr.h>
 #include <thrust/transform_reduce.h>
 #include <thrust/inner_product.h>
+#include <thrust/pair.h>
 #if CUDA_VERSION >= 7000
 #include <thrust/system/cuda/execution_policy.h>
 #endif
