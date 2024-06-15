@@ -2,6 +2,8 @@
 #define THC_GENERIC_FILE "generic/THCTensorMode.cu"
 #else
 
+#include <thrust/iterator/constant_iterator.h>
+
 THC_API void THCTensor_(calculateMode)(THCState *state,
                                         THCTensor *values,
                                         THCudaLongTensor *indices,
