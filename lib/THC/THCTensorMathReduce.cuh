@@ -565,9 +565,9 @@ kernelTransformReduceInnermostDimIndex(K *tgt1,
     for (unsigned s = 8; s > 0; s >>= 1) {
       if (row < num_rows && threadIdx.x < s) {
         thrust::pair<K, Index> arg1 =
-          thrust::make_pair<K, Index>(std::move(sline[threadIdx.x]), iline[threadIdx.x]);
+          thrust::make_pair<K, Index>(std::move(sline[threadIdx.x]), std::move(iline[threadIdx.x]));
         thrust::pair<K, Index> arg2 =
-          thrust::make_pair<K, Index>(std::move(sline[threadIdx.x + s]), iline[threadIdx.x + s]);
+          thrust::make_pair<K, Index>(std::move(sline[threadIdx.x + s]), std::move(iline[threadIdx.x + s]));
         thrust::pair<K, Index> res = binary_op(arg1, arg2);
 
         sline[threadIdx.x] = res.first;
