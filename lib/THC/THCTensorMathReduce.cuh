@@ -11,7 +11,6 @@
 #include <thrust/device_ptr.h>
 #include <thrust/transform_reduce.h>
 #include <thrust/inner_product.h>
-#include <thrust/pair.h>
 #if CUDA_VERSION >= 7000
 #include <thrust/system/cuda/execution_policy.h>
 #endif
@@ -471,7 +470,7 @@ kernelTransformReduceOuterDimIndex(K *tgt1,
       for (unsigned col = 0; col < row_size; ++col) {
         // +1 for Lua index
         acc = binary_op(acc,
-                        thrust::make_pair<K, Index>(*src, col + TH_INDEX_BASE));
+                        thrust::make_pair<K&&, Index>(*src, col + TH_INDEX_BASE));
         src += num_irows;
       }
 
@@ -551,7 +550,7 @@ kernelTransformReduceInnermostDimIndex(K *tgt1,
       K *src = src_ + row * row_size;
       // Sequential reduction within a thread.
       for (unsigned col = threadIdx.x; col < row_size; col += blockDim.x) {
-        acc = binary_op(acc, thrust::make_pair<K, Index>(src[col], col + TH_INDEX_BASE));
+        acc = binary_op(acc, thrust::make_pair<K&&, Index>(src[col], col + TH_INDEX_BASE));
       }
     }
 
@@ -566,9 +565,9 @@ kernelTransformReduceInnermostDimIndex(K *tgt1,
     for (unsigned s = 8; s > 0; s >>= 1) {
       if (row < num_rows && threadIdx.x < s) {
         thrust::pair<K, Index> arg1 =
-          thrust::make_pair<K, Index>(sline[threadIdx.x], iline[threadIdx.x]);
+          thrust::make_pair<K&&, Index>(sline[threadIdx.x], iline[threadIdx.x]);
         thrust::pair<K, Index> arg2 =
-          thrust::make_pair<K, Index>(sline[threadIdx.x + s], iline[threadIdx.x + s]);
+          thrust::make_pair<K&&, Index>(sline[threadIdx.x + s], iline[threadIdx.x + s]);
         thrust::pair<K, Index> res = binary_op(arg1, arg2);
 
         sline[threadIdx.x] = res.first;
